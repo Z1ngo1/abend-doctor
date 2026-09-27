@@ -1,4 +1,3 @@
-[Uploading README.md…]()
 # samples/
 
 Real job output downloaded from z/OS with Zowe CLI (read-only):

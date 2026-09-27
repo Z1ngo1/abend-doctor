@@ -1,0 +1,6 @@
+zowe.config.json
+zowe.config.user.json
+*.env
+__pycache__/
+reports/spool/
+reports/src/

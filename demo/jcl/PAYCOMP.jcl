@@ -1,0 +1,8 @@
+//PAYCOMP  JOB 1,NOTIFY=&SYSUID
+//***************************************************************
+//* COMPILE + LINK PAYCALC. LIST,MAP GIVE OFFSETS IN LISTING
+//* SO ABEND DOCTOR CAN MAP AN ABEND OFFSET BACK TO A STATEMENT.
+//***************************************************************
+//COBRUN   EXEC IGYWCL,PARM.COBOL='LIST,MAP'
+//COBOL.SYSIN  DD DSN=&SYSUID..COB.PRAC(PAYCALC),DISP=SHR
+//LKED.SYSLMOD DD DSN=&SYSUID..LOAD(PAYCALC),DISP=SHR

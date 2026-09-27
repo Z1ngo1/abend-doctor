@@ -1,0 +1,350 @@
+{
+  "abends": {
+    "S0C1": {
+      "title": "Operation exception – invalid instruction",
+      "causes": [
+        "Branch into non-executable storage: a CALL target or function pointer is wrong/unresolved",
+        "Missing STEPLIB or load library: the module was not loaded, code area is zeroes",
+        "Corrupted ESD (link-edit error) or wrong load module"
+      ],
+      "look_at": ["CALL statements in the failing program", "STEPLIB/JOBLIB DD in the JCL", "link-edit MAP for unresolved externals"]
+    },
+    "S0C4": {
+      "title": "Protection exception – bad memory address",
+      "causes": [
+        "Array subscript or index out of range (beyond OCCURS size)",
+        "Null or uninitialised pointer / ADDRESS OF item",
+        "CALL USING argument count or order mismatch between caller and called program",
+        "Reference to a record area before the file is opened"
+      ],
+      "look_at": ["OCCURS and subscript values", "CALL USING argument lists", "pointer SET statements", "LINKAGE SECTION items"]
+    },
+    "S0C5": {
+      "title": "Addressing exception – address outside virtual storage",
+      "causes": [
+        "Pointer arithmetic produced an address below 0 or above the region",
+        "COMPUTE on a pointer or binary field overflowed"
+      ],
+      "look_at": ["SET ADDRESS statements", "COMPUTE with ADDRESS OF", "binary arithmetic that could overflow"]
+    },
+    "S0C6": {
+      "title": "Specification exception – data not aligned",
+      "causes": [
+        "A fullword or doubleword binary field (COMP/BINARY) stored at an odd address",
+        "Redefining a field with different alignment requirements"
+      ],
+      "look_at": ["REDEFINES clauses over COMP items", "77-level or 01-level COMP fields that share storage with odd-length items"]
+    },
+    "S0C7": {
+      "title": "Data exception – invalid packed-decimal or zoned-decimal data",
+      "causes": [
+        "A numeric field contains spaces, letters or non-numeric characters",
+        "Input record layout does not match the FD (wrong columns or LRECL)",
+        "A MOVE from an alphanumeric field to a numeric field without numeric validation",
+        "File opened for the wrong record type (e.g. binary vs text)"
+      ],
+      "look_at": ["Input data fields at the columns the FD defines as numeric", "MOVE statements feeding numeric arithmetic", "IF ... NUMERIC checks before arithmetic"]
+    },
+    "S0C8": {
+      "title": "Fixed-point overflow exception",
+      "causes": [
+        "COMPUTE or arithmetic result too large for the receiving COMP/BINARY field",
+        "Missing ON SIZE ERROR clause on COMPUTE/ADD/MULTIPLY"
+      ],
+      "look_at": ["COMPUTE/ADD/MULTIPLY statements on COMP fields", "whether ON SIZE ERROR is coded"]
+    },
+    "S0C9": {
+      "title": "Fixed-point divide exception – integer division by zero",
+      "causes": [
+        "COMPUTE or DIVIDE with a COMP/BINARY divisor that equals zero",
+        "Counter or accumulator not initialised before division"
+      ],
+      "look_at": ["DIVIDE and COMPUTE / expressions", "whether the divisor is checked for zero first"]
+    },
+    "S0CA": {
+      "title": "Decimal overflow exception – packed-decimal result too large",
+      "causes": [
+        "COMPUTE or ADD result exceeds the PIC 9 definition (too many digits)",
+        "Missing ON SIZE ERROR clause"
+      ],
+      "look_at": ["PIC size of the result field vs maximum possible value", "ON SIZE ERROR clause"]
+    },
+    "S0CB": {
+      "title": "Decimal divide exception – packed-decimal division by zero",
+      "causes": [
+        "DIVIDE or COMPUTE / with a PACKED-DECIMAL divisor that is zero",
+        "Record count or total not yet accumulated when division runs",
+        "End-of-file branch skipped, division done even when no records were read"
+      ],
+      "look_at": ["DIVIDE and COMPUTE / statements", "the variable used as divisor and where it gets its value", "IF divisor = 0 guard before division"]
+    },
+    "S013": {
+      "title": "Dataset open error – wrong RECFM, LRECL or BLKSIZE",
+      "causes": [
+        "FD record size does not match the dataset's LRECL",
+        "RECFM=FB but dataset is RECFM=VB (or vice versa)",
+        "BLKSIZE in JCL overrides dataset label and breaks blocking"
+      ],
+      "look_at": ["FD RECORD CONTAINS / RECORDING MODE", "DCB parameters in the DD statement", "actual dataset attributes with LISTCAT"]
+    },
+    "S213": {
+      "title": "Dataset open error – dataset not found (dynamic allocation failed)",
+      "causes": [
+        "DD statement names a dataset that does not exist",
+        "Dataset was created in an earlier step that did not run (COND check skipped it)",
+        "Typo in the DSN= or DSNAME= value"
+      ],
+      "look_at": ["DSN= in the failing DD", "whether the creating step actually ran (check COND CODE)", "LISTCAT for the dataset name"]
+    },
+    "S222": {
+      "title": "Job cancelled by operator – CPU time limit (short or dynamic)",
+      "causes": [
+        "Infinite loop: PERFORM UNTIL condition never becomes true",
+        "EOF flag on a file never set because AT END logic is missing",
+        "Long-running sort or DB2 query without expected indexes"
+      ],
+      "look_at": ["PERFORM UNTIL loops", "AT END handling on READ statements", "TIME= in the JCL EXEC statement"]
+    },
+    "S322": {
+      "title": "CPU time limit exceeded",
+      "causes": [
+        "Infinite or very long loop – EOF switch never flipped",
+        "READ/WRITE loop not bounded by file content",
+        "TIME= parameter in the JOB or EXEC statement too small"
+      ],
+      "look_at": ["PERFORM UNTIL loops and their termination condition", "AT END clause on READ", "TIME= in JOB and EXEC statements"]
+    },
+    "S522": {
+      "title": "Job wait time limit exceeded (job sat in a wait state too long)",
+      "causes": [
+        "WTOR (operator reply) with no operator available",
+        "DISPLAY UPON CONSOLE waiting for a reply",
+        "Locked resource (ENQUEUE/DB2 lock) not released"
+      ],
+      "look_at": ["DISPLAY UPON CONSOLE / ACCEPT FROM CONSOLE", "WAIT TIME= in JOB statement", "DB2 lock timeouts (SQLCODE -911)"]
+    },
+    "S722": {
+      "title": "SYSOUT line limit exceeded",
+      "causes": [
+        "A DISPLAY or WRITE SYSOUT loop produced too many lines",
+        "LINES= on the DD statement too small for the actual output"
+      ],
+      "look_at": ["DISPLAY statements inside loops", "LINES= on SYSOUT DD statements"]
+    },
+    "S806": {
+      "title": "Module not found – load failed",
+      "causes": [
+        "CALL target program was never compiled or the compile failed",
+        "Load module is in a library not in STEPLIB/JOBLIB",
+        "Member name in CALL differs from the link-edit member name (case or typo)"
+      ],
+      "look_at": ["CALL statement spelling vs load module name", "STEPLIB/JOBLIB DD concatenation", "whether the compile and link-edit steps completed with RC=0"]
+    },
+    "S837": {
+      "title": "Out of real storage – region too small",
+      "causes": [
+        "REGION= in EXEC or JOB is too small for the program's working storage",
+        "Many large arrays or tables defined in WORKING-STORAGE"
+      ],
+      "look_at": ["REGION= value in JOB and EXEC", "size of large WORKING-STORAGE tables (OCCURS)"]
+    },
+    "S878": {
+      "title": "Out of virtual storage – GETMAIN failed",
+      "causes": [
+        "Program allocates large amounts of storage dynamically (CICS/DB2 buffers, sort work)",
+        "REGION= too small"
+      ],
+      "look_at": ["REGION= value", "DB2 sort work and buffer pool sizes"]
+    },
+    "SA14": {
+      "title": "User or LE abend – STOP RUN issued while in a called program",
+      "causes": [
+        "A called subprogram issued STOP RUN instead of GOBACK",
+        "LE condition handler raised a terminal condition (e.g. after CEE3207S)"
+      ],
+      "look_at": ["subprograms called at the time of the abend", "STOP RUN vs GOBACK in subprograms", "CEE/IGZ messages just before the abend"]
+    },
+    "S913": {
+      "title": "Security: RACF/ACF2 dataset access denied",
+      "causes": [
+        "The job's user ID does not have READ permission on the dataset",
+        "The dataset is protected by a RACF profile the user is not in"
+      ],
+      "look_at": ["ICH408I message in JESMSGLG", "RACF profile for the dataset (ask your security admin)", "the user ID the job runs under (USER= in JOB statement)"]
+    },
+    "SB37": {
+      "title": "Out of space – primary and secondary extents exhausted",
+      "causes": [
+        "Dataset SPACE allocation is too small for the volume of data written",
+        "A write loop is not terminating (infinite WRITE)"
+      ],
+      "look_at": ["SPACE= in the DD statement", "WRITE loops and their exit condition", "whether a prior step should have deleted/emptied the dataset"]
+    },
+    "SD37": {
+      "title": "Out of space – no secondary extent available",
+      "causes": [
+        "Dataset was allocated without secondary space (SPACE=(CYL,(n,0)))",
+        "Dataset spans all available extents on the volume"
+      ],
+      "look_at": ["SPACE=(CYL,(primary,secondary)) in the DD", "number of extents already used (LISTCAT)"]
+    },
+    "SE37": {
+      "title": "Out of space – maximum extents reached (16 for non-extended format)",
+      "causes": [
+        "Dataset grew across 16 extents; no more can be added on this volume",
+        "Multi-volume not specified and data grew beyond one volume"
+      ],
+      "look_at": ["SPACE allocation size", "whether MXIG or extended-format datasets are needed", "whether a DISP=DELETE step should clean up before this step"]
+    },
+    "U0016": {
+      "title": "LE user abend 16 – unhandled condition (CEE default action = ABEND)",
+      "causes": [
+        "A Language Environment condition was signalled and not caught",
+        "Common trigger: S0C7 / S0CB raised inside a LE-conforming program"
+      ],
+      "look_at": ["CEE3207S or CEE3204S message before the abend", "LE condition handlers (ON EXCEPTION / USE AFTER ERROR)", "the underlying system abend code in the dump"]
+    },
+    "U1020": {
+      "title": "LE user abend 1020 – CICS or IMS pseudo-abend mapped to LE",
+      "causes": [
+        "CICS transaction abended (e.g. ASRA, AICA) and LE mapped it to U1020",
+        "IMS pseudo-abend forwarded to LE"
+      ],
+      "look_at": ["CICS transaction dump for the original abend code", "HANDLE ABEND or RESP checking in the CICS COBOL program"]
+    },
+    "U4038": {
+      "title": "LE severe error – run-time termination (often caused by I/O or data error)",
+      "causes": [
+        "File opened without FILE STATUS and a bad status occurred (LE terminates the run)",
+        "An IGZ0035S message just before this abend names the file and status code",
+        "COBOL STOP RUN after detecting an error and calling CEEMRCE"
+      ],
+      "look_at": ["IGZ0035S or IGZ0037S messages in SYSOUT", "FILE STATUS clause on all SELECT statements", "the step that precedes the U4038 in the spool"]
+    }
+  },
+
+  "file_status": {
+    "00": "Success",
+    "02": "Duplicate alternate key (VSAM KSDS) – write succeeded but a duplicate alt-key was found",
+    "04": "Record length does not match FD – wrong LRECL or the record is shorter/longer than expected",
+    "05": "Optional file not present – file does not exist; SELECT OPTIONAL allows this for OPEN INPUT",
+    "07": "CLOSE on a file opened in wrong mode, or REWIND on a non-tape file",
+    "10": "End of file (AT END) – normal end of sequential read",
+    "14": "Sequential read beyond end of relative file",
+    "21": "Sequence error on WRITE to an indexed file (key not in ascending order)",
+    "22": "Duplicate primary key – tried to WRITE or REWRITE a record with an already existing key",
+    "23": "Record not found – READ with a key that does not exist in the file",
+    "24": "Disk full (VSAM) – no space for a new record",
+    "30": "Permanent I/O error – hardware or DASD error; check SYSLOG for IECnnnI messages",
+    "34": "Disk full (sequential) – no more space on the volume",
+    "35": "File not present at OPEN – dataset does not exist; check DSN= in the DD",
+    "37": "OPEN for WRITE/EXTEND but file is read-only (tape or protected dataset)",
+    "38": "File already open or was not closed properly",
+    "39": "Attribute conflict – LRECL, RECFM, BLKSIZE or key length in the FD does not match the actual dataset",
+    "41": "OPEN on an already open file",
+    "42": "CLOSE on a file that is not open",
+    "43": "DELETE or REWRITE attempted without a prior successful READ",
+    "44": "REWRITE: new record length differs from original record length",
+    "46": "Sequential READ but no prior successful START or READ",
+    "47": "READ on a file not opened for INPUT or I-O",
+    "48": "WRITE on a file not opened for OUTPUT, EXTEND or I-O",
+    "49": "DELETE or REWRITE on a file not opened for I-O",
+    "90": "VSAM logic error – check IDCAMS LISTCAT for the file",
+    "91": "VSAM password failure",
+    "92": "VSAM logic error (not enough virtual storage for VSAM buffers)",
+    "93": "VSAM resource not available (file busy or not allocated)",
+    "94": "VSAM sequential record not available (concurrent access conflict)",
+    "95": "VSAM invalid or incomplete file information",
+    "96": "VSAM no DD statement – the DD name in the SELECT is missing from the JCL",
+    "97": "VSAM OPEN successful but VERIFY was required (file was not closed properly last time)"
+  },
+
+  "sqlcode": {
+    "0":    "Success",
+    "100":  "Row not found (end of cursor or SELECT INTO returned nothing)",
+    "-007": "Illegal character in SQL statement – often a special character not allowed in SQL",
+    "-010": "String constant not terminated – missing closing quote",
+    "-051": "Cursor not open – FETCH before OPEN CURSOR",
+    "-060": "Invalid data type specification",
+    "-084": "SQL statement not in a valid context",
+    "-101": "Statement too long or too complex",
+    "-104": "Syntax error in SQL – unexpected token near the position shown",
+    "-117": "Number of values does not match number of columns in INSERT",
+    "-150": "Object (view/alias) is read-only – cannot INSERT/UPDATE/DELETE",
+    "-180": "Invalid date/time value – check the format string and the data",
+    "-181": "Date/time value not within valid range",
+    "-198": "INTO clause missing from INSERT or SELECT INTO",
+    "-199": "Illegal use of keyword",
+    "-204": "Object not found – table, view or alias does not exist; check spelling and qualifier",
+    "-206": "Column does not exist in the table",
+    "-270": "Cannot update a column referenced in a GROUP BY or DISTINCT",
+    "-305": "NULL value returned but host variable has no indicator variable",
+    "-310": "Host variable contains data that is not numeric where numeric is required",
+    "-311": "Host variable length is negative or greater than maximum",
+    "-313": "Number of host variables does not match number of parameter markers",
+    "-332": "Character conversion error – source and target CCSIDs are incompatible",
+    "-401": "Comparison of incompatible types",
+    "-404": "UPDATE or INSERT value is too long for the column",
+    "-407": "NULL value not allowed in a NOT NULL column",
+    "-408": "Value of wrong data type for the column",
+    "-420": "Invalid character in character-to-number conversion",
+    "-501": "Cursor not open on FETCH",
+    "-502": "Cursor already open on OPEN",
+    "-503": "Cursor result table not available",
+    "-504": "Cursor name not defined",
+    "-507": "Cursor not open for UPDATE",
+    "-532": "Referential integrity violation – parent row deleted while child rows exist",
+    "-545": "CHECK constraint violation",
+    "-551": "Not authorised to perform the operation on the object",
+    "-552": "Not authorised for the SQL statement",
+    "-601": "Object already exists – CREATE fails because name is taken",
+    "-603": "Unique index cannot be created – duplicate keys already exist in the table",
+    "-670": "Row too long for the page size",
+    "-803": "Duplicate primary or unique key – INSERT/UPDATE violates uniqueness",
+    "-805": "DBRM/package not found in plan – run BIND after every compile",
+    "-811": "SELECT INTO returned more than one row – use a cursor or add a WHERE condition",
+    "-818": "Timestamp mismatch – DBRM and load module compiled at different times; re-link",
+    "-904": "Resource unavailable – DB2 object in use or stopped; check with DBA",
+    "-911": "Rollback due to deadlock or timeout – retry the transaction",
+    "-922": "Authorization failure (dynamic SQL) – user not authorised at runtime",
+    "-927": "Language Interface not in the module – program was not precompiled correctly",
+    "-950": "Location name is invalid (distributed DB2)",
+    "-10000": "Connection to DB2 failed – check SUBSYS= in the JCL and whether DB2 is up"
+  },
+
+  "messages": {
+    "IEF212I": "Dataset not found – the DSN= in the DD statement does not exist. Create it or fix the name.",
+    "IEF344I": "Dataset not available – cannot allocate the dataset (catalogued elsewhere or in use).",
+    "IEF210I": "Dataset allocated but not on expected volume – check VOL=SER or catalog.",
+    "IEF211I": "Dataset unallocated – the previous step deleted it, or it was never created.",
+    "IEF253I": "Duplicate dataset name in the DD concatenation.",
+    "IEF217I": "DYNAMIC ALLOCATION FAILED – generic catch-all; see the system completion code with it.",
+    "IEF272I": "Step was not executed – a COND= or IF/THEN test skipped this step. Check why the previous step returned the RC it did.",
+    "IEF450I": "Step abended – line identifies step name and abend code (system or user).",
+    "IEF453I": "JCL ERROR – the job did not start. Read the IEFCnnnI messages around it for the specific error.",
+    "IEF142I": "Step executed – normal completion message with the condition code.",
+    "IEFC630I": "Invalid DD statement syntax – check parentheses, equals signs and continuation commas.",
+    "IEFC663I": "Unmatched DD name – a PROC step references a DD that was not passed in the EXEC PROC=.",
+    "IEC020I": "OPEN failed for a QSAM sequential file; see the reason code after the dash.",
+    "IEC026I": "CLOSE failed – usually a write error or out-of-space on the dataset.",
+    "IEC030I": "Block count mismatch at CLOSE – data may be corrupted; check WRITE loops.",
+    "IEC070I": "Permanent I/O error (SYNADAF) – hardware error or bad tape; retry or restore from backup.",
+    "IEC141I": "Dataset is not on the volume listed in the catalog – catalog and VTOC are out of sync; contact storage admin.",
+    "IGZ0035S": "File opened without FILE STATUS and got a non-zero status. Add FILE STATUS to the SELECT or fix the underlying problem (status code is in the message).",
+    "IGZ0037S": "File I/O error with no FILE STATUS clause. The status code in the message tells you what went wrong.",
+    "IGZ0039S": "SORT or MERGE failed. Check RC and SYSOUT of the sort step for more detail.",
+    "IGZ0200S": "Arithmetic overflow – result exceeds the field size. Add ON SIZE ERROR or make the field larger.",
+    "IGZ0201S": "Divide by zero (decimal). Guard with IF divisor = 0 before the DIVIDE/COMPUTE.",
+    "CEE3207S": "A hardware exception (usually S0C7 data, S0CB divide) was raised inside a LE program. The statement number is in the CEEDUMP.",
+    "CEE3204S": "A COBOL run-time error was raised (e.g. subscript out of range). See message text for the specific condition.",
+    "CEE5201S": "Stack overflow – excessive recursion or very large 01-level items on the stack.",
+    "DSNT408I": "DB2 SQLCODE –408 in dynamic SQL – data type mismatch; host variable type does not match column.",
+    "DSNT501I": "DB2 SQLCODE –501 – FETCH attempted when cursor is not open.",
+    "IDC3009I": "VSAM OPEN failed – status in the message. Usually RC 8, reason 42 = file busy.",
+    "IDC3303I": "VSAM record not found – key does not exist; check your input key value.",
+    "IKJ56500I": "TSO command not found – check spelling and CLIST/REXX path.",
+    "IKJ56700I": "Dynamic allocation error in TSO – see the reason code.",
+    "IAT3000": "JES2 job class or sysaff problem – job cannot start; check CLASS= and SYSAFF=.",
+    "IAT5210": "JES2 output limit exceeded (OUTLIM= on a SYSOUT DD) – increase OUTLIM= or fix the WRITE loop."
+  }
+}

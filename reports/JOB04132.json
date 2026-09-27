@@ -1,0 +1,119 @@
+{
+  "kind": "abend",
+  "spool": {
+    "job": "PAY35",
+    "jobid": "JOB04132",
+    "abend": "U4038",
+    "reason": "00000001",
+    "failed_step": "RUN",
+    "steps": [
+      {
+        "step": "RUN",
+        "rc": "U4038"
+      }
+    ],
+    "jcl_error": true,
+    "le": {
+      "program": "PAYCALC",
+      "entry": "PAYCALC",
+      "statement": null,
+      "offset": "000001A0"
+    },
+    "file_errors": [
+      {
+        "file": "EMPFILE",
+        "program": "PAYCALC",
+        "status": "35"
+      },
+      {
+        "file": "EMPFILE",
+        "program": "PAYCALC",
+        "status": "35"
+      }
+    ],
+    "sqlcodes": [],
+    "messages": [
+      "09.35.58 JOB04132  IEF450I PAY35 RUN - ABEND=S000 U4038 REASON=00000001",
+      "//* EMPFILE DD IS MISSING -> OPEN FAILS, STATUS 35 -> IGZ0035S U4038",
+      "IEFC653I SUBSTITUTION JCL - 1,NOTIFY=Z73460",
+      "IEFC653I SUBSTITUTION JCL - DSN=Z73460.LOAD,DISP=SHR",
+      "IGD103I SMS ALLOCATED TO DDNAME STEPLIB",
+      "IEF472I PAY35 RUN - COMPLETION CODE - SYSTEM=000 USER=4038 REASON=00000001",
+      "IGD104I Z73460.LOAD                                  RETAINED,  DDNAME=STEPLIB",
+      "IEF032I STEP/RUN     /STOP  2026270.0935",
+      "IGZ0035S There was an unsuccessful OPEN or CLOSE of file EMPFILE in program PAYCALC at relative location X'1A0'.",
+      "CEE3845I CEEDUMP Processing started.",
+      "CEE0198S The termination of a thread was signaled due to an unhandled condition.",
+      "IGZ0035S There was an unsuccessful OPEN or CLOSE of file EMPFILE in program PAYCALC at relative location X'1A0'.  Neither",
+      "CEE3846I CEEDUMP Processing completed."
+    ],
+    "programs_mentioned": [
+      "PAYCALC"
+    ],
+    "jcl_issues": []
+  },
+  "program": {
+    "name": "PAYCALC",
+    "source": "cobol/PAYCALC.cbl",
+    "task_dir": ".",
+    "jcl": [
+      "jcl/PAY0C7.jcl",
+      "jcl/PAY0CB.jcl",
+      "jcl/PAY35.jcl",
+      "jcl/PAYJCLER.jcl",
+      "jcl/PAYOK.jcl"
+    ],
+    "copybooks": [],
+    "data_files": [],
+    "selects": {
+      "EMPFILE": "EMP-FILE"
+    },
+    "calls": [],
+    "called_by": []
+  },
+  "knowledge": {
+    "title": "LE severe error \u2013 run-time termination (often caused by I/O or data error)",
+    "causes": [
+      "File opened without FILE STATUS and a bad status occurred (LE terminates the run)",
+      "An IGZ0035S message just before this abend names the file and status code",
+      "COBOL STOP RUN after detecting an error and calling CEEMRCE"
+    ],
+    "look_at": [
+      "IGZ0035S or IGZ0037S messages in SYSOUT",
+      "FILE STATUS clause on all SELECT statements",
+      "the step that precedes the U4038 in the spool"
+    ]
+  },
+  "suspects": [
+    {
+      "line": 38,
+      "paragraph": "MAIN-PARA",
+      "code": "OPEN INPUT EMP-FILE",
+      "score": 0
+    },
+    {
+      "line": 45,
+      "paragraph": "MAIN-PARA",
+      "code": "CLOSE EMP-FILE",
+      "score": 0
+    },
+    {
+      "line": 48,
+      "paragraph": "READ-EMP",
+      "code": "READ EMP-FILE",
+      "score": 0
+    }
+  ],
+  "last_display": null,
+  "statement_line": null,
+  "file_status_meaning": {
+    "35": "File not present at OPEN \u2013 dataset does not exist; check DSN= in the DD"
+  },
+  "sqlcode_meaning": {},
+  "message_meaning": {
+    "IEF450I": "Step abended \u2013 line identifies step name and abend code (system or user).",
+    "IGZ0035S": "File opened without FILE STATUS and got a non-zero status. Add FILE STATUS to the SELECT or fix the underlying problem (status code is in the message)."
+  },
+  "jcl_locations": [],
+  "source_from": null
+}

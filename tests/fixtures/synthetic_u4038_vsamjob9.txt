@@ -1,0 +1,7 @@
+SYNTHETIC TEST FIXTURE - hand-written in the format of z/OS JES2 output, not captured from a real system.
+10.05.01 JOB04520  $HASP373 COMPRUN  STARTED - INIT 1    - CLASS A        - SYS S0W1
+10.05.03 JOB04520  IEF450I COMPRUN RUN STEP020 - ABEND=S000 U4038 REASON=00000001
+        20 //STEP020  EXEC MYCOMPGO,MEMBER=VSAMJOB9
+IGZ0035S There was an unsuccessful OPEN or CLOSE of file SRTDD in program VSAMJOB9 at relative location X'0452'.
+         Neither FILE STATUS nor an ERROR declarative were specified. The status code was 35.
+         From compile unit VSAMJOB9 at entry point VSAMJOB9 at compile unit offset +00000452 at entry offset +00000452
